@@ -93,7 +93,7 @@ class TTSHandler(commands.Component):
             return
 
 
-        await tts.standardTTS(text)
+        await tts.edgeTTS(text)
 
         cooldown_tracker[user] = now
 
