@@ -15,7 +15,6 @@ load_dotenv()
 
 cooldown_tracker = {}
 
-TWITCH_TOKEN = os.getenv("TWITCH_TOKEN")
 TWITCH_CHANNEL = os.getenv("TWITCH_CHANNEL")
 TWITCH_NICK = os.getenv("TWITCH_NICK")
 TTS_COOLDOWN_SECONDS = 300
@@ -23,11 +22,6 @@ TTS_FOLDER = Path("./audio")
 
 TTS_FOLDER.mkdir(exist_ok=True)
 
-# try: 
-#     with open("./audio/tts_redeems.json", "x") as f:
-#         f.write("{}")
-# except FileExistsError:
-#     print("TTS redeems file already exists, skipping creation.")
 
 class TwitchBot(commands.Bot):
     def __init__(self):
@@ -94,6 +88,8 @@ class TTSHandler(commands.Component):
 
 
         await tts.edgeTTS(text)
+
+        
 
         cooldown_tracker[user] = now
 
