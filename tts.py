@@ -14,9 +14,6 @@ from rvc_python.infer import RVCInference
 import edge_tts
 import asyncio
 
-queue = []
-is_playing = False
-
 # device = "cuda" if torch.cuda.is_available() else "cpu"
 
 text = "Once there was a young rat named Arthur, who could never make up his mind. Whenever his friends asked him if he would like to go out with them, he would only answer, I don't know. He wouldn't say yes or no either. He would always shirk making a choice. His aunt Helen said to him, Now look here. No one is going to care for you if you carry on like this. You have no more mind than a blade of grass. One rainy day, the rats heard a great noise in the loft. The pine rafters were all rotten, so that the barn was rather unsafe. At last the joists gave way and fell to the ground. The walls shook and all the rats' hair stood on end with fear and horror. This won't do, said the captain. I'll send out scouts to search for a new home."
@@ -30,14 +27,16 @@ print("Initializing tts")
 
 
 class TTSManager():
-    # def __init__(self):
+    def __init__(self):
+        self.queue = []
+        self.is_playing = False
         
     async def queue_manager(self):
-        if len(queue) < 0:
-            if is_playing == False:
-                is_playing = True
-                await self.playTTS(queue[0])
-                queue.pop(0)
+        if len(self.queue) > 0:
+            if self.is_playing == False:
+                self.is_playing = True
+                await self.playTTS(self.queue[0])
+                self.queue.pop(0)
 
 
 
@@ -59,9 +58,9 @@ class TTSManager():
         is_playing = False
         self.queue_manager()
 
-    def tts(self, chat_message):
-        queue.append(chat_message)
-        self.queue_manager()
+    async def tts(self, chat_message):
+        self.queue.append(chat_message)
+        await self.queue_manager()
 
 
 
@@ -69,6 +68,5 @@ class TTSManager():
 
 if __name__ == "__main__":
     tts = TTSManager()
-    queue.append("This is the first test message")
-    queue.append("This is the second test message")
-    asyncio.run(tts.tts(text))
+    asyncio.run(tts.tts("This is the first message"))
+    asyncio.run(tts.tts("This is the second message"))
