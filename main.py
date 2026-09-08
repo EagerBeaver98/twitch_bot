@@ -55,7 +55,7 @@ class TwitchBot(commands.Bot):
         await self.subscribe_websocket(payload=payload)
         logging.info("Subscribed to chat messages for channel %s", os.getenv("TWITCH_OWNER_ID"))
 
-        await self.add_component(TTSHandler(self))
+        # await self.add_component(TTSHandler(self))
 
 
     async def event_ready(self):
