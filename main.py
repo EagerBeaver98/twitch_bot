@@ -6,7 +6,7 @@ from twitchio import eventsub
 from twitchio.ext import commands
 import json
 from datetime import datetime, timedelta
-from tts import edgeTTS
+#from tts import edgeTTS
 import asyncio
 import logging
 
@@ -64,39 +64,39 @@ class TwitchBot(commands.Bot):
         print("Listening for messages...")
 
 
-class TTSHandler(commands.Component):
+# class TTSHandler(commands.Component):
 
-    def __init__(self, bot):
-        self.bot = bot
+#     def __init__(self, bot):
+#         self.bot = bot
 
 
-    @commands.command(name='tts')
-    async def tts_command(self, ctx: commands.Context) -> None:
-        user = ctx.author.name
-        now = datetime.now()
+#     @commands.command(name='tts')
+#     async def tts_command(self, ctx: commands.Context) -> None:
+#         user = ctx.author.name
+#         now = datetime.now()
 
-        if user in cooldown_tracker:
-            last_time = cooldown_tracker[user]
-            if now - last_time < timedelta(seconds=TTS_COOLDOWN_SECONDS):
-                remaining = TTS_COOLDOWN_SECONDS - (now - last_time).seconds
-                await ctx.send(f"@{user}, please wait {remaining} seconds before using TTS again.")
-                return
-        text = ctx.message.text[len("!tts "):].strip()
+#         if user in cooldown_tracker:
+#             last_time = cooldown_tracker[user]
+#             if now - last_time < timedelta(seconds=TTS_COOLDOWN_SECONDS):
+#                 remaining = TTS_COOLDOWN_SECONDS - (now - last_time).seconds
+#                 await ctx.send(f"@{user}, please wait {remaining} seconds before using TTS again.")
+#                 return
+#         text = ctx.message.text[len("!tts "):].strip()
 
-        if not text:
-            await ctx.send(f"@{user}, please provide text for TTS.")
-            return
-
-        
-        await edgeTTS(text)
+#         if not text:
+#             await ctx.send(f"@{user}, please provide text for TTS.")
+#             return
 
         
+#         await edgeTTS(text)
 
-        cooldown_tracker[user] = now
+        
 
-    @commands.command(name='ping')
-    async def ping_command(self, ctx: commands.Context) -> None:
-        await ctx.send("pong!")
+#         cooldown_tracker[user] = now
+
+#     @commands.command(name='ping')
+#     async def ping_command(self, ctx: commands.Context) -> None:
+#         await ctx.send("pong!")
 
 async def main():
     print("Starting Twitch Bot...")
