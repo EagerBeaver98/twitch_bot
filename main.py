@@ -6,7 +6,7 @@ from twitchio import eventsub
 from twitchio.ext import commands
 import json
 from datetime import datetime, timedelta
-import tts
+from tts import edgeTTS
 import asyncio
 import logging
 
@@ -69,6 +69,7 @@ class TTSHandler(commands.Component):
     def __init__(self, bot):
         self.bot = bot
 
+
     @commands.command(name='tts')
     async def tts_command(self, ctx: commands.Context) -> None:
         user = ctx.author.name
@@ -86,8 +87,8 @@ class TTSHandler(commands.Component):
             await ctx.send(f"@{user}, please provide text for TTS.")
             return
 
-
-        await tts.edgeTTS(text)
+        
+        await edgeTTS(text)
 
         
 
