@@ -6,7 +6,7 @@ from twitchio import eventsub
 from twitchio.ext import commands
 import json
 from datetime import datetime, timedelta
-from tts import edgeTTS
+from tts import TTSManager
 import asyncio
 import logging
 
@@ -35,6 +35,7 @@ class TwitchBot(commands.Bot):
             client_secret=os.getenv("TWITCH_CLIENT_SECRET"),
             bot_id=os.getenv("TWITCH_BOT_ID")
         )
+        
         print(f"Bot initialized with channel: {TWITCH_CHANNEL}")
 
     
@@ -68,7 +69,7 @@ class TTSHandler(commands.Component):
 
     def __init__(self, bot):
         self.bot = bot
-
+        self.TTS = TTSManager()
 
     @commands.command(name='tts')
     async def tts_command(self, ctx: commands.Context) -> None:
@@ -88,7 +89,7 @@ class TTSHandler(commands.Component):
             return
 
         
-        await edgeTTS(text)
+        await self.TTS.tts(text)
 
         
 
