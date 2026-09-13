@@ -44,23 +44,29 @@ class TwitchBot(commands.Bot):
         # Called when a user completes the OAuth flow in their browser.
         # We store the token and subscribe to chat on their channel.
         await self.add_token(payload.access_token, payload.refresh_token)
-        await self.join_channels([TWITCH_CHANNEL])
+        if payload.user_id == TWITCH_CHANNEL:
+            await self.join_channels([TWITCH_CHANNEL])
+        await self._try_subscribe_chat()
 
     async def setup_hook(self) -> None:
 
-        payload = eventsub.ChatMessageSubscription(
-            broadcaster_user_id=os.getenv("TWITCH_OWNER_ID"),
-            user_id=os.getenv("TWITCH_BOT_ID"),
-        )
-        # subscribe_websocket opens a WebSocket connection to Twitch EventSub.
-
-        await self.subscribe_websocket(payload=payload)
         logging.info("Subscribed to chat messages for channel %s", os.getenv("TWITCH_OWNER_ID"))
 
         await self.add_component(TTSHandler(self))
         await self.chat_overlay.start()
         await self.add_component(ChatOverlayHandler(self.chat_overlay))
+        await self._try_subscribe_chat()
 
+    async def _try_subscribe_chat(self) -> None:
+        payload = eventsub.ChatMessageSubscription(
+            broadcaster_user_id=os.getenv("TWITCH_OWNER_ID"),
+            user_id=os.getenv("TWITCH_BOT_ID"),
+        )
+        try:
+            await self.subscribe_websocket(payload=payload)
+            logging.info("Subscribed to chat messages.")
+        except Exception as e:
+            logging.warning("Chat subscription not ready yet: %s", e)
 
     async def event_ready(self):
         print(f"Bot logged in as: {os.getenv('TWITCH_BOT_ID')}")
