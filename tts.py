@@ -30,13 +30,28 @@ class TTSManager():
     def __init__(self):
         self.queue = []
         self.is_playing = False
+        self.rvc = None
         
     async def queue_manager(self):
-        if len(self.queue) > 0:
-            if self.is_playing == False:
-                self.is_playing = True
-                await self.playTTS(self.queue[0])
-                self.queue.pop(0)
+        if self.is_playing:
+            return
+        if len(self.queue) == 0:
+            return
+
+        self.is_playing = True
+
+        if self.rvc is None:
+            print("Loading RVC model")
+            self.rvc = RVCInference(model_path="./tts_models/daniel_uk_oddcast/DanielUK_200e.pth", device="cuda:0")
+
+        while len(self.queue) > 0:
+            await self.playTTS(self.queue.pop(0))
+
+        print("End of queue, unloading RVC model")
+
+        self.rvc.unload_model()
+        self.rvc = None
+        self.is_playing = False
 
 
 
@@ -49,14 +64,10 @@ class TTSManager():
 
         with torch.no_grad():
 
-            rvc = RVCInference(model_path="./tts_models/daniel_uk_oddcast/DanielUK_200e.pth", device="cuda:0")
-            rvc.infer_file("./audio/edge_tts_output.mp3", output_path="./audio/rvc_output.wav")
-            rvc.unload_model()
+            self.rvc.infer_file("./audio/edge_tts_output.mp3", output_path="./audio/rvc_output.wav")
     
         print("Playing RVC output")
         playsound("./audio/rvc_output.wav")
-        is_playing = False
-        self.queue_manager()
 
     async def tts(self, chat_message):
         self.queue.append(chat_message)
