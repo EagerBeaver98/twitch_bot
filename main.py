@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from tts import TTSManager
 import asyncio
 import logging
+from chat_overlay import ChatOverlayServer
 
 logging.basicConfig(level=logging.INFO)
 load_dotenv()
@@ -35,7 +36,7 @@ class TwitchBot(commands.Bot):
             client_secret=os.getenv("TWITCH_CLIENT_SECRET"),
             bot_id=os.getenv("TWITCH_BOT_ID")
         )
-        
+        self.chat_overlay = ChatOverlayServer()
         print(f"Bot initialized with channel: {TWITCH_CHANNEL}")
 
     
@@ -57,6 +58,8 @@ class TwitchBot(commands.Bot):
         logging.info("Subscribed to chat messages for channel %s", os.getenv("TWITCH_OWNER_ID"))
 
         await self.add_component(TTSHandler(self))
+        await self.chat_overlay.start()
+        await self.add_component(ChatOverlayHandler(self.chat_overlay))
 
 
     async def event_ready(self):
@@ -64,6 +67,15 @@ class TwitchBot(commands.Bot):
         print(f"Connected to channel: {TWITCH_CHANNEL}")
         print("Listening for messages...")
 
+
+class ChatOverlayHandler(commands.Component):
+    def __init__(self, overlay: ChatOverlayServer):
+        self.overlay = overlay
+    @commands.Component.listener()
+    async def event_message(self, payload: twitchio.ChatMessage) -> None:
+        if payload.text.startswith("!tts") is False:
+
+            await self.overlay.broadcast(payload.chatter.name, payload.text)
 
 class TTSHandler(commands.Component):
 
