@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Chat Overlay</title>
+  <style>
+    @font-face {
+      font-family: "OverlayFont";
+      src: url("/static/YourFont.woff2") format("woff2");
+    }
+
+    html, body {
+      margin: 0;
+      background: transparent;   /* Transparent lets OBS show your scene behind the text. */
+      overflow: hidden;
+      height: 100%;
+    }
+
+    #chat-list {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;  /* New messages sit at the bottom. */
+      min-height: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+
+    .chat-line {
+      font-family: "OverlayFont", sans-serif;
+      font-size: 24px;
+      color: #ffffff;
+      text-shadow: 1px 1px 2px black;
+      margin: 4px 0;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slide-in 0.25s ease-out forwards;
+    }
+
+    .chat-line .user {
+      font-weight: bold;
+      color: #7fd1ff;
+      margin-right: 6px;
+    }
+
+    @keyframes slide-in {
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div id="chat-list"></div>
+  <script>
+    const MAX_MESSAGES = 200;  // Stops the page from growing forever.
+    const list = document.getElementById("chat-list");
+    const ws = new WebSocket(`ws://${location.host}/ws`);
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      const line = document.createElement("div");
+      line.className = "chat-line";
+      line.innerHTML = `<span class="user">${escapeHtml(data.username)}:</span> ${escapeHtml(data.text)}`;
+      list.appendChild(line);
+
+      while (list.children.length > MAX_MESSAGES) {
+        list.removeChild(list.firstChild);
+      }
+    };
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>
