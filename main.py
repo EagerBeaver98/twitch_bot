@@ -6,7 +6,7 @@ from twitchio import eventsub
 from twitchio.ext import commands
 import json
 from datetime import datetime, timedelta
-from tts import TTSManager
+# from tts import TTSManager
 import asyncio
 import logging
 from chat_overlay import ChatOverlayServer
@@ -18,10 +18,10 @@ cooldown_tracker = {}
 
 TWITCH_CHANNEL = os.getenv("TWITCH_CHANNEL")
 TWITCH_NICK = os.getenv("TWITCH_NICK")
-TTS_COOLDOWN_SECONDS = 300
-TTS_FOLDER = Path("./audio")
+# TTS_COOLDOWN_SECONDS = 300
+# TTS_FOLDER = Path("./audio")
 
-TTS_FOLDER.mkdir(exist_ok=True)
+# TTS_FOLDER.mkdir(exist_ok=True)
 
 
 class TwitchBot(commands.Bot):
@@ -52,7 +52,7 @@ class TwitchBot(commands.Bot):
 
         logging.info("Subscribed to chat messages for channel %s", os.getenv("TWITCH_OWNER_ID"))
 
-        await self.add_component(TTSHandler(self))
+        # await self.add_component(TTSHandler(self))
         await self.chat_overlay.start()
         await self.add_component(ChatOverlayHandler(self.chat_overlay))
         await self._try_subscribe_chat()
@@ -83,35 +83,35 @@ class ChatOverlayHandler(commands.Component):
 
             await self.overlay.broadcast(payload.chatter.name, payload.text)
 
-class TTSHandler(commands.Component):
+# class TTSHandler(commands.Component):
 
-    def __init__(self, bot):
-        self.bot = bot
-        self.TTS = TTSManager()
+#     def __init__(self, bot):
+#         self.bot = bot
+#         self.TTS = TTSManager()
 
-    @commands.command(name='tts')
-    async def tts_command(self, ctx: commands.Context) -> None:
-        user = ctx.author.name
-        now = datetime.now()
+#     @commands.command(name='tts')
+#     async def tts_command(self, ctx: commands.Context) -> None:
+#         user = ctx.author.name
+#         now = datetime.now()
 
-        if user in cooldown_tracker:
-            last_time = cooldown_tracker[user]
-            if now - last_time < timedelta(seconds=TTS_COOLDOWN_SECONDS):
-                remaining = TTS_COOLDOWN_SECONDS - (now - last_time).seconds
-                await ctx.send(f"@{user}, please wait {remaining} seconds before using TTS again.")
-                return
-        text = ctx.message.text[len("!tts "):].strip()
+#         if user in cooldown_tracker:
+#             last_time = cooldown_tracker[user]
+#             if now - last_time < timedelta(seconds=TTS_COOLDOWN_SECONDS):
+#                 remaining = TTS_COOLDOWN_SECONDS - (now - last_time).seconds
+#                 await ctx.send(f"@{user}, please wait {remaining} seconds before using TTS again.")
+#                 return
+#         text = ctx.message.text[len("!tts "):].strip()
 
-        if not text:
-            await ctx.send(f"@{user}, please provide text for TTS.")
-            return
-
-        
-        await self.TTS.tts(text)
+#         if not text:
+#             await ctx.send(f"@{user}, please provide text for TTS.")
+#             return
 
         
+#         await self.TTS.tts(text)
 
-        cooldown_tracker[user] = now
+        
+
+#         cooldown_tracker[user] = now
 
     @commands.command(name='ping')
     async def ping_command(self, ctx: commands.Context) -> None:
