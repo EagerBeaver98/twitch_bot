@@ -1,10 +1,15 @@
 import asyncio
 import json
+import sys
 from collections import deque
 from pathlib import Path
 from aiohttp import web
 
-BASE_DIR = Path(__file__).parent
+if getattr(sys, "frozen", False):
+    BASE_DIR = Path(sys._MEIPASS)
+else:
+    BASE_DIR = Path(__file__).parent
+
 STATIC_CHAT_DIR = BASE_DIR / "chat_overlay"
 
 HISTORY_SIZE = 20  # How many past messages a newly connected overlay sees right away.
