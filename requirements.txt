@@ -22,7 +22,6 @@ Cython==3.2.9
 decorator==5.3.1
 dotenv==0.9.9
 edge-tts==7.2.8
-fairseq @ git+https://github.com/Tps-F/fairseq.git@ff08af27e302625a27d3502b0791a9367c8af0c7
 faiss-cpu==1.7.3
 fastapi==0.141.1
 ffmpeg-python==0.2.0
@@ -94,7 +93,6 @@ sympy==1.14.0
 tabulate==0.10.0
 tensorboardX==2.6.5
 threadpoolctl==3.6.0
-torch==2.13.0
 torchaudio==2.11.0
 torchcrepe==0.0.24
 tqdm==4.70.0
